@@ -1,7 +1,7 @@
 from utils.file_handler import load_data, save_data
 from expenses.expense import Expense
 
-EXPENSE_FILE = 'expenses/expenses.json'
+EXPENSE_FILE = 'data/expenses.json'
 
 class ExpenseManager:
     def add_expense(self, amount, category, note=''):

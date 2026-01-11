@@ -1,1 +1,20 @@
-[]
+[
+    {
+        "amount": 12850.0,
+        "category": "bills",
+        "note": "for the two months of electricity",
+        "date": "2026-01-11"
+    },
+    {
+        "amount": 5500.0,
+        "category": "bills",
+        "note": "for the gas",
+        "date": "2026-01-11"
+    },
+    {
+        "amount": 4370.0,
+        "category": "groceries",
+        "note": "food for a week",
+        "date": "2026-01-11"
+    }
+]

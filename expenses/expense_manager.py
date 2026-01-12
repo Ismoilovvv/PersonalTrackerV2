@@ -16,3 +16,13 @@ class ExpenseManager:
     def get_total_spent(self):
         expenses = load_data(EXPENSE_FILE)
         return sum(expense['amount'] for expense in expenses)
+
+    def get_total_by_category(self):
+        expenses = load_data(EXPENSE_FILE)
+        summary = {}
+
+        for expense in expenses:
+            category = expense['category']
+            summary[category] = summary.get(category, 0) + expense['amount']
+
+        return summary

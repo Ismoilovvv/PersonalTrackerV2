@@ -16,14 +16,15 @@ def menu():
           'Menu:\n'
           '1.  Add Expense\n'
           '2.  View Expenses\n'
-          '3.  Total Spent\n'
-          '4.  Report by Category\n'
-          '5.  Add Task\n'
-          '6.  View Tasks\n'
-          '7.  View Pending Tasks\n'
-          '8.  Mark Task as Completed\n'
-          '9.  Task Summary\n'
-          '10. Exit')
+          '3.  Delete Expense\n'
+          '4.  Total Spent\n'
+          '5.  Report by Category\n'
+          '6.  Add Task\n'
+          '7.  View Tasks\n'
+          '8.  View Pending Tasks\n'
+          '9.  Mark Task as Completed\n'
+          '10.  Task Summary\n'
+          '11. Exit')
 
 def main():
     e_manager = ExpenseManager()
@@ -62,24 +63,43 @@ def main():
                               f'{expense["amount"]}¥ - {expense["date"]}\n'
                               f'   Note: {expense["note"]}')
 
-                #Total Spent
+                #Delete an Expense
                 case 3:
+                    expenses = e_manager.get_all_expenses()
+                    if not expenses:
+                        print('No expenses so far!')
+                        continue
+
+                    print('\nAll Expenses: ')
+                    for index, expense in enumerate(expenses, start=1):
+                        print(f"{index}. {expense['category']}: ¥{expense['amount']}")
+
+                    try:
+                        index = int(input('\nEnter the index of the task: ')) - 1
+                        e_manager.delet_expense(index)
+                        print('Expenses deleted successfully!')
+                    except ValueError:
+                        print('Invalid index. Try again!')
+                        continue
+
+                #Total Spent
+                case 4:
                     print(f'Total Spent: ¥{e_manager.get_total_spent():,.2f}')
 
                 #Expense Report by Category
-                case 4:
+                case 5:
                     summary = e_manager.get_total_by_category()
                     for key, value in summary.items():
                         print(f'{key.capitalize()}: ¥{value}')
 
                 #Add Task
-                case 5:
+                case 6:
                     title = input('Enter the title: ')
                     t_manager.add_task(title)
                     print('Task added successfully!')
 
                 #View Tasks
-                case 6:
+                case 7:
                     tasks = t_manager.get_all_tasks()
                     if not tasks:
                         print('No tasks so far!')
@@ -89,7 +109,7 @@ def main():
                         print(f"{index}. {status} {task['title']}")
 
                 #View Pending Tasks
-                case 7:
+                case 8:
                     tasks = t_manager.get_pending_tasks()
                     if not tasks:
                         print('No pending tasks so far!')
@@ -100,7 +120,7 @@ def main():
                         print(f"    {index}. {task['title']}")
 
                 #Mark Task Completed
-                case 8:
+                case 9:
                     tasks = t_manager.get_all_tasks()
                     if not tasks:
                         print('No tasks so far!')
@@ -124,12 +144,12 @@ def main():
                         print('Invalid index. Try again!')
 
                 #Task Summary
-                case 9:
+                case 10:
                     total, completed = t_manager.get_task_summary()
                     print(f'Tasks completed: {completed}/{total}')
 
                 #Exit/Quit
-                case 10:
+                case 11:
                     print('The program has been terminated successfully!')
                     break
 

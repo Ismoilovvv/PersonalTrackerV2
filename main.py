@@ -6,9 +6,7 @@ from tasks.task_manager import TaskManager
 #Convert repeating try-else statements into functions
 #if not statements into functions
 #Tuckle the issue with the tasks.json
-#Add functions: 1. delete an expense
-#               2. delete a task
-#               3. unmark a task
+#Add functions: 3. unmark a task
 #
 
 def menu():
@@ -23,7 +21,8 @@ def menu():
           '7.  View Tasks\n'
           '8.  View Pending Tasks\n'
           '9.  Mark Task as Completed\n'
-          '10.  Task Summary\n'
+          '10. Delete Task\n'
+          '11. Task Summary\n'
           '11. Exit')
 
 def main():
@@ -67,7 +66,7 @@ def main():
                 case 3:
                     expenses = e_manager.get_all_expenses()
                     if not expenses:
-                        print('No expenses so far!')
+                        print('No expenses to delete!')
                         continue
 
                     print('\nAll Expenses: ')
@@ -75,7 +74,7 @@ def main():
                         print(f"{index}. {expense['category']}: ¥{expense['amount']}")
 
                     try:
-                        index = int(input('\nEnter the index of the task: ')) - 1
+                        index = int(input('\nEnter the index of the expense: ')) - 1
                         e_manager.delet_expense(index)
                         print('Expenses deleted successfully!')
                     except ValueError:
@@ -143,13 +142,33 @@ def main():
                     else:
                         print('Invalid index. Try again!')
 
-                #Task Summary
+                #Delete Task
                 case 10:
+                    tasks = t_manager.get_all_tasks()
+                    if not tasks:
+                        print('No tasks to delete!')
+                        continue
+
+                    print('\nAll Tasks: ')
+                    for index, task in enumerate(tasks, start=1):
+                        status = '✅' if task['completed'] else '❌'
+                        print(f'{index}. {status} {task['title']}')
+
+                    try:
+                        index = int(input('\nEnter the index of the task: ')) - 1
+                        t_manager.delete_task(index)
+                        print('Task deleted successfully!')
+                    except ValueError:
+                        print('Invalid index. Try again!')
+                        continue
+
+                #Task Summary
+                case 11:
                     total, completed = t_manager.get_task_summary()
                     print(f'Tasks completed: {completed}/{total}')
 
                 #Exit/Quit
-                case 11:
+                case 12:
                     print('The program has been terminated successfully!')
                     break
 

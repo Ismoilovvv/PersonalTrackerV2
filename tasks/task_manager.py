@@ -10,6 +10,11 @@ class TaskManager:
         tasks.append(task.to_dict())
         save_data(TASK_FILE, tasks)
 
+    def delete_task(self, index):
+        tasks = load_data(TASK_FILE)
+        del tasks[index]
+        save_data(TASK_FILE, tasks)
+
     def get_all_tasks(self):
         return load_data(TASK_FILE)
 

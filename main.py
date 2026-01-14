@@ -1,14 +1,6 @@
 from expenses.expense_manager import ExpenseManager
 from tasks.task_manager import TaskManager
 
-###Tasks to do tomorrow (13.01.2025)
-
-#Convert repeating try-else statements into functions
-#if not statements into functions
-#Tuckle the issue with the tasks.json
-#Add functions: 3. unmark a task
-#
-
 def menu():
     print('\n------------------------------\n'
           'Menu:\n'
@@ -21,9 +13,28 @@ def menu():
           '7.  View Tasks\n'
           '8.  View Pending Tasks\n'
           '9.  Mark Task as Completed\n'
-          '10. Delete Task\n'
-          '11. Task Summary\n'
-          '11. Exit')
+          '10. Unmark Task\n'
+          '11. Delete Task\n'
+          '12. Task Summary\n'
+          '13. Exit')
+
+def check_is_digit(prompt, error_msg, convert):
+    while True:
+        try:
+            return convert(input(prompt))
+        except ValueError:
+            print(error_msg)
+
+def record_exists_check(record, msg):
+        if not record:
+            print(msg)
+            return None
+        return record
+
+def print_tasks(tasks):
+    for index, task in enumerate(tasks, start=1):
+        status = '✅' if task['completed'] else '❌'
+        print(f"{index}. {status} {task['title']}")
 
 def main():
     e_manager = ExpenseManager()
@@ -32,18 +43,17 @@ def main():
     while True:
         try:
             menu()
-            choice = int(input('\nEnter your choice (1-8): '))
+            choice = int(input('\nEnter your choice (1-13): '))
 
             match choice:
 
                 #Add an Expense
                 case 1:
-                    try:
-                        amount = float(input('Enter the amount: '))
-                    except ValueError:
-                        print('Invalid amount. Try again!')
-                        continue
-
+                    amount = check_is_digit(
+                        'Enter the amount: ',
+                        'Invalid amount. Try again!\n',
+                        convert=float
+                    )
                     category = input('Enter the category: ').lower()
                     note = input('Enter the note: ')
                     e_manager.add_expense(amount, category, note)
@@ -51,9 +61,10 @@ def main():
 
                 #View Expenses
                 case 2:
-                    expenses = e_manager.get_all_expenses()
-                    if not expenses:
-                        print('No expenses so far!')
+                    expenses = record_exists_check(
+                        e_manager.get_all_expenses(),
+                        'No expenses so far!')
+                    if expenses is None:
                         continue
 
                     for index, expense in enumerate(expenses, start=1):
@@ -64,22 +75,25 @@ def main():
 
                 #Delete an Expense
                 case 3:
-                    expenses = e_manager.get_all_expenses()
-                    if not expenses:
-                        print('No expenses to delete!')
+                    expenses = record_exists_check(
+                        e_manager.get_all_expenses(),
+                        'No expenses to delete!')
+                    if expenses is None:
                         continue
 
                     print('\nAll Expenses: ')
                     for index, expense in enumerate(expenses, start=1):
                         print(f"{index}. {expense['category']}: ¥{expense['amount']}")
 
-                    try:
-                        index = int(input('\nEnter the index of the expense: ')) - 1
-                        e_manager.delet_expense(index)
-                        print('Expenses deleted successfully!')
-                    except ValueError:
+                    index = check_is_digit(
+                        '\nEnter the index of the expense: ',
+                        'Invalid index. Try again!',
+                        convert=int) - 1
+                    if 0 <= index < len(expenses):
+                        e_manager.delete_expense(index)
+                        print("Expense is deleted successfully!")
+                    else:
                         print('Invalid index. Try again!')
-                        continue
 
                 #Total Spent
                 case 4:
@@ -88,6 +102,10 @@ def main():
                 #Expense Report by Category
                 case 5:
                     summary = e_manager.get_total_by_category()
+                    if not summary:
+                        print('No expenses so far!')
+                        continue
+
                     for key, value in summary.items():
                         print(f'{key.capitalize()}: ¥{value}')
 
@@ -99,19 +117,20 @@ def main():
 
                 #View Tasks
                 case 7:
-                    tasks = t_manager.get_all_tasks()
-                    if not tasks:
-                        print('No tasks so far!')
+                    tasks = record_exists_check(
+                        t_manager.get_all_tasks(),
+                        'No tasks so far!')
+                    if tasks is None:
+                        continue
 
-                    for index, task in enumerate(tasks, start=1):
-                        status = '✅' if task['completed'] else '❌'
-                        print(f"{index}. {status} {task['title']}")
+                    print_tasks(tasks)
 
                 #View Pending Tasks
                 case 8:
-                    tasks = t_manager.get_pending_tasks()
-                    if not tasks:
-                        print('No pending tasks so far!')
+                    tasks = record_exists_check(
+                        t_manager.get_pending_tasks(),
+                        'No pending tasks so far!')
+                    if tasks is None:
                         continue
 
                     print('Pending Tasks: ')
@@ -120,20 +139,20 @@ def main():
 
                 #Mark Task Completed
                 case 9:
-                    tasks = t_manager.get_all_tasks()
-                    if not tasks:
-                        print('No tasks so far!')
+                    tasks = record_exists_check(
+                        t_manager.get_all_tasks(),
+                        'No tasks so far!')
+                    if tasks is None:
                         continue
 
                     print('\nAll Tasks: ')
-                    for index, task in enumerate(tasks, start=1):
-                        status = '✅' if task['completed'] else '❌'
-                        print(f"{index}. {status} {task['title']}")
+                    print_tasks(tasks)
 
-                    try:
-                        index = int(input('\nEnter the index of the task: ')) - 1
-                    except ValueError:
-                        print('Invalid index. Try again!')
+                    index = check_is_digit(
+                        '\nEnter the index of the task: ',
+                        'Invalid index. Try again!',
+                        convert=int) - 1
+                    if index is None:
                         continue
 
                     if 0 <= index < len(tasks):
@@ -142,39 +161,62 @@ def main():
                     else:
                         print('Invalid index. Try again!')
 
-                #Delete Task
+                #Unmark Task
                 case 10:
-                    tasks = t_manager.get_all_tasks()
-                    if not tasks:
-                        print('No tasks to delete!')
+                    tasks = record_exists_check(
+                        t_manager.get_all_tasks(),
+                        'No tasks so far!')
+                    if tasks is None:
                         continue
 
                     print('\nAll Tasks: ')
-                    for index, task in enumerate(tasks, start=1):
-                        status = '✅' if task['completed'] else '❌'
-                        print(f'{index}. {status} {task['title']}')
+                    print_tasks(tasks)
 
-                    try:
-                        index = int(input('\nEnter the index of the task: ')) - 1
-                        t_manager.delete_task(index)
-                        print('Task deleted successfully!')
-                    except ValueError:
+                    index = check_is_digit(
+                        '\nEnter the index of the task: ',
+                        'Invalid index. Try again!',
+                        convert=int) - 1
+
+                    if 0 <= index < len(tasks):
+                        t_manager.unmark_task(index)
+                        print('Task is "unmarked"!')
+                    else:
                         print('Invalid index. Try again!')
+
+                #Delete Task
+                case 11:
+                    tasks = record_exists_check(
+                        t_manager.get_all_tasks(),
+                        'No tasks to delete!')
+                    if tasks is None:
                         continue
 
+                    print('\nAll Tasks: ')
+                    print_tasks(tasks)
+
+                    index = check_is_digit(
+                        '\nEnter the index of the task: ',
+                        'Invalid index. Try again!',
+                        convert=int) - 1
+                    t_manager.delete_task(index)
+                    print('Task is deleted successfully!')
+
                 #Task Summary
-                case 11:
+                case 12:
                     total, completed = t_manager.get_task_summary()
+                    if total == 0:
+                        print('No tasks so far!')
+                        continue
                     print(f'Tasks completed: {completed}/{total}')
 
                 #Exit/Quit
-                case 12:
+                case 13:
                     print('The program has been terminated successfully!')
                     break
 
                 #Choices other than 1-9
                 case _:
-                    print('Invalid choice. Try again (1-8)!')
+                    print('Invalid choice. Try again (1-13)!')
 
         except ValueError:
             print('Invalid choice. Please try again!')

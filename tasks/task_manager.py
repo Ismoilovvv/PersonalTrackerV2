@@ -28,6 +28,12 @@ class TaskManager:
             tasks[index]['completed'] = True
             save_data(TASK_FILE, tasks)
 
+    def unmark_task(self, index):
+        tasks = load_data(TASK_FILE)
+        if 0 <= index < len(tasks):
+            tasks[index]['completed'] = False
+            save_data(TASK_FILE, tasks)
+
     def get_task_summary(self):
         tasks = load_data(TASK_FILE)
         total = len(tasks)

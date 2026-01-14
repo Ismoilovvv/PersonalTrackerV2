@@ -10,7 +10,7 @@ class ExpenseManager:
         expenses.append(expense.to_dict())
         save_data(EXPENSE_FILE, expenses)
 
-    def delet_expense(self, index):
+    def delete_expense(self, index):
         expenses = load_data(EXPENSE_FILE)
         del expenses[index]
         save_data(EXPENSE_FILE, expenses)
